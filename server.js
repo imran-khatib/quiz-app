@@ -1,9 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const { GoogleGenAI, Type } = require('@google/genai');
+const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -260,6 +261,18 @@ app.post('/explainMistake', async (req, res) => {
 app.get('/getLeaderboard', (req, res) => {
     res.json(leaderboard);
 });
+
+// --- Serve Frontend Files ---
+// This will serve files like `index.tsx` from the root directory
+app.use(express.static(path.join(__dirname)));
+
+// This is a catch-all route that sends the `index.html` file
+// for any GET request that doesn't match an API route above.
+// This allows the React app to handle routing.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 
 app.listen(PORT, () => {
     console.log(`Quiz server running on http://localhost:${PORT}`);
